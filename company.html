@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>株式会社テスト不動産 | 売主直売の不動産会社</title>
+  <!-- Google Fonts: Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== リセット & ベース ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ===== デザイントークン ===== */
+    :root {
+      --bg: #ffffff;
+      --surface: #f5f7fa;
+      --card: #ffffff;
+      --accent: #1a56a0;        /* メインアクセント（青） */
+      --accent-dark: #13407a;   /* ホバー用濃い青 */
+      --accent-light: #e8f0fb;  /* 薄い青背景 */
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      --radius-card: 12px;
+      --radius-btn: 8px;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* ===== 共通ユーティリティ ===== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* セクション共通余白 */
+    .section {
+      padding: 80px 0;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    /* ボタン */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-btn);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(26, 86, 160, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(26, 86, 160, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-light);
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-white:hover {
+      background: var(--accent-light);
+    }
+
+    /* ===== ヘッダー ===== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    /* ロゴ */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .logo-text {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .logo-text small {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    /* グローバルナビ */
+    .gnav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .gnav a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .gnav a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ハンバーガーボタン（スマホ用） */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ハンバーガーメニュー開閉時のアニメーション */
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* スマホメニュー */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px 24px;
+      z-index: 999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .mobile-menu.open { display: block; }
+
+    .mobile-menu ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 12px 0;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-menu .btn {
+      margin-top: 16px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ===== ヒーローセクション ===== */
+    .hero {
+      margin-top: 64px; /* ヘッダー分のオフセット */
+      position: relative;
+      overflow: hidden;
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* アニメーションするグラデーション背景 */
+    .hero-canvas {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #0a1628, #0f2d5a, #1a56a0, #0f3460);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      z-index: 0;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* パーティクル（浮遊する点） */
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* 大きな装飾円（ぼんやり光るオーブ） */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-orb-1 {
+      width: 500px;
+      height: 500px;
+      background: rgba(108, 99, 255, 0.25);
+      top: -100px;
+      right: -50px;
+      animation: orbPulse 6s ease-in-out infinite;
+    }
+
+    .hero-orb-2 {
+      width: 400px;
+      height: 400px;
+      background: rgba(45, 125, 210, 0.2);
+      bottom: -80px;
+      left: -80px;
+      animation: orbPulse 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50%       { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* コンテンツエリア */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 100px 0 60px;
+    }
+
+    /* タグ */
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+
+    /* h1：文字ごとに流れ込むアニメーション */
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    /* 各行のラッパー（オーバーフロー隠し） */
+    .hero-line {
+      overflow: hidden;
+      display: block;
+    }
+
+    /* 行内テキスト（下からスライドイン） */
+    .hero-line-inner {
+      display: block;
+      transform: translateY(100%);
+      animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .hero-line:nth-child(1) .hero-line-inner { animation-delay: 0.4s; }
+    .hero-line:nth-child(2) .hero-line-inner { animation-delay: 0.6s; }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #7dd3fc, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes slideUp {
+      to { transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 44px;
+      max-width: 520px;
+      line-height: 1.9;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.9s;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.1s;
+    }
+
+    /* スクロール促進インジケーター */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.5s;
+    }
+
+    .scroll-indicator span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.7);
+      animation: scrollDrop 1.8s ease-in-out infinite;
+    }
+
+    @keyframes scrollDrop {
+      0%   { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    /* ヒーロー下部の実績バー */
+    .hero-stats {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.1);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stat-item {
+      padding: 28px 24px;
+      background: rgba(0,0,0,0.2);
+      text-align: center;
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .stat-item:nth-child(1) { animation-delay: 1.2s; }
+    .stat-item:nth-child(2) { animation-delay: 1.35s; }
+    .stat-item:nth-child(3) { animation-delay: 1.5s; }
+
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-num span {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+    }
+
+    /* ===== 選ばれる理由 ===== */
+    .reasons {
+      background: var(--surface);
+    }
+
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .reason-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 28px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .reason-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+
+    .reason-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--accent-light);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    .reason-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .reason-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ===== サービス紹介（購入フロー） ===== */
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 56px;
+      position: relative;
+    }
+
+    /* ステップ間の矢印ライン */
+    .flow-steps::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: calc(12.5% + 8px);
+      right: calc(12.5% + 8px);
+      height: 2px;
+      background: var(--accent-light);
+      z-index: 0;
+    }
+
+    .flow-step {
+      text-align: center;
+      padding: 0 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* イラストコンテナ */
+    .flow-illustration {
+      width: 140px;
+      height: 120px;
+      margin: 0 auto 20px;
+      background: var(--accent-light);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .flow-step:hover .flow-illustration {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(26, 86, 160, 0.15);
+    }
+
+    .flow-illustration svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .step-num {
+      width: 64px;
+      height: 64px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 16px rgba(26, 86, 160, 0.3);
+    }
+
+    .flow-step h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .flow-step p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ===== 会社概要・沿革 ===== */
+    .about {
+      background: var(--surface);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 48px;
+    }
+
+    /* 会社概要テーブル */
+    .company-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .company-table tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .company-table th {
+      padding: 14px 16px 14px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 35%;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    .company-table td {
+      padding: 14px 0;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    /* 沿革タイムライン */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 6px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .timeline-year {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .timeline-text {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ===== 求人セクション ===== */
+    .recruit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .recruit-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .recruit-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .recruit-type {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .recruit-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .recruit-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .recruit-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .recruit-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      color: var(--muted);
+    }
+
+    .recruit-cta {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    /* ===== お問い合わせ CTA バナー ===== */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--accent) 0%, #2d7dd2 100%);
+      padding: 72px 0;
+      text-align: center;
+    }
+
+    .cta-banner h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .cta-banner p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 36px;
+    }
+
+    .cta-banner .btn-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===== フッター ===== */
+    footer {
+      background: #111827;
+      color: rgba(255,255,255,0.7);
+      padding: 56px 0 24px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .footer-logo .logo-mark {
+      background: var(--accent);
+    }
+
+    .footer-logo .logo-text {
+      color: #fff;
+    }
+
+    .footer-logo .logo-text small {
+      color: rgba(255,255,255,0.5);
+    }
+
+    .footer-desc {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 20px;
+    }
+
+    /* SNSアイコン */
+    .sns-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .sns-link {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+
+    .sns-link:hover {
+      background: var(--accent);
+    }
+
+    .footer-col h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-col a {
+      font-size: 0.83rem;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: #fff;
+    }
+
+    /* フッター下部 */
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-bottom p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-legal a {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+    }
+
+    .footer-legal a:hover {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ===== チャットボットウィジェット ===== */
+    /* トリガーボタン（右下固定） */
+    #chat-trigger {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 9999;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(26,86,160,0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    #chat-trigger:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+    }
+
+    /* チャットウィンドウ */
+    #chat-widget {
+      position: fixed;
+      bottom: 90px;
+      right: 28px;
+      z-index: 9998;
+      width: 340px;
+      max-height: 520px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* 開閉アニメーション */
+      transform: translateY(20px) scale(0.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    #chat-widget.open {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* チャットヘッダー */
+    .chat-header {
+      background: var(--accent);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .chat-header-text h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .chat-header-text p {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .chat-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .chat-close:hover { opacity: 1; }
+
+    /* メッセージエリア */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f9fafb;
+    }
+
+    /* メッセージバブル */
+    .msg {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      max-width: 100%;
+    }
+
+    .msg.bot { justify-content: flex-start; }
+    .msg.user { justify-content: flex-end; }
+
+    .msg-bubble {
+      max-width: 78%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.87rem;
+      line-height: 1.6;
+    }
+
+    .msg.bot .msg-bubble {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg.user .msg-bubble {
+      background: var(--accent);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    /* 入力エリア */
+    .chat-input-area {
+      padding: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      background: #fff;
+    }
+
+    #chat-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.87rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    #chat-input:focus {
+      border-color: var(--accent);
+    }
+
+    #chat-send {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    #chat-send:hover {
+      background: var(--accent-dark);
+    }
+
+    /* ===== レスポンシブ対応 ===== */
+
+    /* タブレット（768px〜1024px） */
+    @media (max-width: 1024px) {
+      .reasons-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .flow-steps {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+
+      /* フロー矢印ラインを非表示 */
+      .flow-steps::before { display: none; }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .recruit-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* スマートフォン（768px以下） */
+    @media (max-width: 768px) {
+      /* ヘッダー：ハンバーガーメニュー表示 */
+      .gnav,
+      .header-cta { display: none; }
+      .hamburger { display: flex; }
+
+      /* ヒーロー */
+      .hero-content {
+        padding: 80px 0 60px;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-btns {
+        flex-direction: column;
+      }
+
+      .hero-btns .btn {
+        justify-content: center;
+      }
+
+      /* セクション余白を縮小 */
+      .section { padding: 56px 0; }
+
+      /* グリッドを1カラムに */
+      .reasons-grid,
+      .flow-steps,
+      .recruit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-steps::before { display: none; }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      /* チャットウィジェットをスマホ幅に合わせる */
+      #chat-widget {
+        left: 16px;
+        right: 16px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <!-- ロゴ -->
+        <a href="#" class="logo">
+          <div class="logo-mark">T</div>
+          <div class="logo-text">
+            株式会社テスト不動産
+            <small>TEST REAL ESTATE</small>
+          </div>
+        </a>
+
+        <!-- グローバルナビ -->
+        <nav>
+          <ul class="gnav">
+            <li><a href="#service">サービス</a></li>
+            <li><a href="#about">会社概要</a></li>
+            <li><a href="#recruit">採用情報</a></li>
+            <li><a href="#contact">お問い合わせ</a></li>
+          </ul>
+        </nav>
+
+        <!-- CTAボタン（PC） -->
+        <a href="#contact" class="btn btn-primary header-cta">無料相談</a>
+
+        <!-- ハンバーガーボタン（スマホ） -->
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- スマホメニュー -->
+  <div class="mobile-menu" id="mobile-menu">
+    <ul>
+      <li><a href="#service" class="mobile-nav-link">サービス</a></li>
+      <li><a href="#about" class="mobile-nav-link">会社概要</a></li>
+      <li><a href="#recruit" class="mobile-nav-link">採用情報</a></li>
+      <li><a href="#contact" class="mobile-nav-link">お問い合わせ</a></li>
+    </ul>
+    <a href="#contact" class="btn btn-primary mobile-nav-link">無料相談する</a>
+  </div>
+
+  <!-- ===== ヒーローセクション ===== -->
+  <section class="hero">
+
+    <!-- アニメーション背景 -->
+    <div class="hero-canvas"></div>
+
+    <!-- 浮遊パーティクル（JSで生成） -->
+    <div class="particles" id="particles"></div>
+
+    <!-- 光るオーブ -->
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+
+    <!-- メインコンテンツ -->
+    <div class="hero-content">
+      <div class="container">
+        <div class="hero-tag">🏠 売主直売 — 仲介手数料不要</div>
+        <h1>
+          <span class="hero-line"><span class="hero-line-inner">あなたの理想の住まいを、</span></span>
+          <span class="hero-line"><span class="hero-line-inner"><em>直接お届けします。</em></span></span>
+        </h1>
+        <p class="hero-sub">
+          株式会社テスト不動産は、自社保有の厳選物件を仲介手数料なしでご提供。<br>
+          購入から入居まで、専任スタッフが丁寧にサポートします。
+        </p>
+        <div class="hero-btns">
+          <a href="#service" class="btn btn-white">物件を見る →</a>
+          <a href="#contact" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,0.5);">無料相談する</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- スクロール促進インジケーター -->
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+
+    <!-- 実績数値バー -->
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">1,200<span>件以上</span></div>
+        <div class="stat-label">累計販売実績</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">98<span>%</span></div>
+        <div class="stat-label">お客様満足度</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0<span>円</span></div>
+        <div class="stat-label">仲介手数料</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== 選ばれる理由 ===== -->
+  <section class="section reasons" id="service">
+    <div class="container">
+      <div class="section-label">Why choose us</div>
+      <h2 class="section-title">テスト不動産が選ばれる理由</h2>
+      <p class="section-sub">売主直売だからこそできる、3つのこだわりをご紹介します。</p>
+
+      <div class="reasons-grid">
+        <!-- 理由1 -->
+        <div class="reason-card">
+          <div class="reason-icon">💰</div>
+          <h3>仲介手数料 0円</h3>
+          <p>自社所有物件を直接販売するため、一般的な不動産取引で発生する仲介手数料が一切かかりません。その分をお客様の住まいに充てていただけます。</p>
+        </div>
+        <!-- 理由2 -->
+        <div class="reason-card">
+          <div class="reason-icon">🏘️</div>
+          <h3>豊富な自社物件</h3>
+          <p>中古戸建・一棟ビル・倉庫・事務所など、多彩な用途の自社物件を常時ご用意。居住用から事業用まで、お客様のニーズに合わせた最適な物件をご提案します。</p>
+        </div>
+        <!-- 理由3 -->
+        <div class="reason-card">
+          <div class="reason-icon">🛡️</div>
+          <h3>安心のアフターサービス</h3>
+          <p>ご入居後も専任スタッフが対応する充実のアフターサービスを提供。設備の不具合や暮らしのご相談など、長期的にサポートします。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== サービス紹介：購入フロー ===== -->
+  <section class="section" style="background: var(--bg);">
+    <div class="container">
+      <div class="section-label">Purchase Flow</div>
+      <h2 class="section-title">購入の流れ</h2>
+      <p class="section-sub">初めての方でも安心。専任スタッフがすべてのステップをサポートします。</p>
+
+      <div class="flow-steps">
+
+        <!-- ステップ1：無料相談 → 握手イラスト -->
+        <div class="flow-step">
+          <div class="flow-illustration" style="font-size: 56px; background: var(--accent-light); border-radius: 20px;">
+            🤝
+          </div>
+          <div class="step-num">1</div>
+          <h3>無料相談・ヒアリング</h3>
+          <p>ご希望エリア・予算・間取りなどをお聞きし、最適なプランをご提案します。</p>
+        </div>
+
+        <!-- ステップ2：物件提案・内覧 → 家＋虫眼鏡 -->
+        <div class="flow-step">
+          <div class="flow-illustration" style="font-size: 56px; background: var(--accent-light); border-radius: 20px;">
+            🏠
+          </div>
+          <div class="step-num">2</div>
+          <h3>物件のご提案・内覧</h3>
+          <p>条件に合う自社物件をご紹介。実際に内覧いただき、生活イメージを確認できます。</p>
+        </div>
+
+        <!-- ステップ3：契約・ローン → 書類＋ペン -->
+        <div class="flow-step">
+          <div class="flow-illustration" style="font-size: 56px; background: var(--accent-light); border-radius: 20px;">
+            📝
+          </div>
+          <div class="step-num">3</div>
+          <h3>ご契約・ローン手続き</h3>
+          <p>売買契約の締結と住宅ローンの申請をサポート。煩雑な手続きも丁寧にご案内します。</p>
+        </div>
+
+        <!-- ステップ4：引き渡し → 家＋鍵 -->
+        <div class="flow-step">
+          <div class="flow-illustration" style="font-size: 56px; background: var(--accent-light); border-radius: 20px;">
+            🔑
+          </div>
+          <div class="step-num">4</div>
+          <h3>引き渡し・入居</h3>
+          <p>鍵のお引き渡しから入居後のフォローまで、最後まで責任を持って対応します。</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 会社概要・沿革 ===== -->
+  <section class="section about" id="about">
+    <div class="container">
+      <div class="section-label">About Us</div>
+      <h2 class="section-title">会社概要・沿革</h2>
+
+      <div class="about-grid">
+        <!-- 会社概要テーブル -->
+        <div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;color:var(--muted);">会社概要</h3>
+          <table class="company-table">
+            <tr>
+              <th>会社名</th>
+              <td>株式会社テスト不動産</td>
+            </tr>
+            <tr>
+              <th>設立</th>
+              <td>2010年4月1日</td>
+            </tr>
+            <tr>
+              <th>代表取締役</th>
+              <td>テスト 太郎</td>
+            </tr>
+            <tr>
+              <th>資本金</th>
+              <td>5,000万円</td>
+            </tr>
+            <tr>
+              <th>従業員数</th>
+              <td>150名（2025年4月現在）</td>
+            </tr>
+            <tr>
+              <th>所在地</th>
+              <td>〒100-0001<br>東京都千代田区テスト町1-2-3</td>
+            </tr>
+            <tr>
+              <th>事業内容</th>
+              <td>不動産売買・分譲・管理</td>
+            </tr>
+            <tr>
+              <th>免許番号</th>
+              <td>国土交通大臣（1）第XXXXX号</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- 沿革タイムライン -->
+        <div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;color:var(--muted);">沿革</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-year">2010年 4月</div>
+              <div class="timeline-text">東京都千代田区にて株式会社テスト不動産を設立</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2012年 6月</div>
+              <div class="timeline-text">首都圏エリアへ事業拡大。自社分譲マンション第一号「テストレジデンス渋谷」竣工</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2015年 3月</div>
+              <div class="timeline-text">累計販売500件を達成。不動産管理事業を開始</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2018年 9月</div>
+              <div class="timeline-text">大阪・福岡に支店を開設し、全国展開を加速</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2022年 1月</div>
+              <div class="timeline-text">オンライン内覧・契約サービスを開始。DX推進を本格化</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2024年 4月</div>
+              <div class="timeline-text">累計販売1,200件突破。お客様満足度98%を継続達成</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 求人セクション ===== -->
+  <section class="section" id="recruit">
+    <div class="container">
+      <div class="section-label">Recruit</div>
+      <h2 class="section-title">採用情報</h2>
+      <p class="section-sub">不動産を通じて、人々の「住まい」を支えるチームメンバーを募集しています。</p>
+
+      <div class="recruit-grid">
+        <!-- 営業職 -->
+        <div class="recruit-card">
+          <span class="recruit-type">正社員</span>
+          <h3>不動産営業職</h3>
+          <p>自社物件の販売営業をお任せします。未経験歓迎。充実の研修制度あり。</p>
+          <div class="recruit-tags">
+            <span class="recruit-tag">未経験歓迎</span>
+            <span class="recruit-tag">研修充実</span>
+            <span class="recruit-tag">インセンティブあり</span>
+          </div>
+        </div>
+        <!-- 事務職 -->
+        <div class="recruit-card">
+          <span class="recruit-type">正社員</span>
+          <h3>営業事務・契約管理</h3>
+          <p>売買契約書類の作成・管理や顧客対応をサポートする事務スタッフを募集。</p>
+          <div class="recruit-tags">
+            <span class="recruit-tag">土日休み</span>
+            <span class="recruit-tag">残業少なめ</span>
+            <span class="recruit-tag">産育休実績あり</span>
+          </div>
+        </div>
+        <!-- エンジニア -->
+        <div class="recruit-card">
+          <span class="recruit-type">正社員</span>
+          <h3>ITエンジニア（DX推進）</h3>
+          <p>不動産業務のDX化を推進するエンジニアを募集。社内システムの開発・改善をお任せします。</p>
+          <div class="recruit-tags">
+            <span class="recruit-tag">リモート可</span>
+            <span class="recruit-tag">フレックス制</span>
+            <span class="recruit-tag">副業OK</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="recruit-cta">
+        <a href="#" class="btn btn-outline">採用情報をもっと見る →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== お問い合わせ CTAバナー ===== -->
+  <section class="cta-banner" id="contact">
+    <div class="container">
+      <h2>まずはお気軽にご相談ください</h2>
+      <p>物件のご相談・資料請求・無料査定など、何でもお気軽にどうぞ。<br>専任スタッフが丁寧にご対応します。</p>
+      <div class="btn-group">
+        <a href="tel:0120-XXX-XXX" class="btn btn-white">📞 0120-XXX-XXX（無料）</a>
+        <button onclick="openChat()" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,0.5);">💬 チャットで相談する</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <!-- 会社情報 -->
+        <div>
+          <div class="footer-logo">
+            <div class="logo-mark">T</div>
+            <div class="logo-text">
+              株式会社テスト不動産
+              <small>TEST REAL ESTATE</small>
+            </div>
+          </div>
+          <p class="footer-desc">
+            売主直売にこだわり、お客様に正直な価格で<br>
+            理想の住まいをお届けします。
+          </p>
+          <!-- SNSリンク -->
+          <div class="sns-links">
+            <a href="#" class="sns-link" title="X（旧Twitter）">𝕏</a>
+            <a href="#" class="sns-link" title="Instagram">📷</a>
+            <a href="#" class="sns-link" title="LINE">💬</a>
+            <a href="#" class="sns-link" title="YouTube">▶</a>
+          </div>
+        </div>
+
+        <!-- サービス -->
+        <div class="footer-col">
+          <h4>サービス</h4>
+          <ul>
+            <li><a href="#">物件一覧</a></li>
+            <li><a href="#">購入の流れ</a></li>
+            <li><a href="#">無料相談</a></li>
+            <li><a href="#">物件管理</a></li>
+          </ul>
+        </div>
+
+        <!-- 会社情報 -->
+        <div class="footer-col">
+          <h4>会社情報</h4>
+          <ul>
+            <li><a href="#about">会社概要</a></li>
+            <li><a href="#about">沿革</a></li>
+            <li><a href="#recruit">採用情報</a></li>
+            <li><a href="#">ニュース</a></li>
+          </ul>
+        </div>
+
+        <!-- サポート -->
+        <div class="footer-col">
+          <h4>サポート</h4>
+          <ul>
+            <li><a href="#contact">お問い合わせ</a></li>
+            <li><a href="#">よくある質問</a></li>
+            <li><a href="#">アクセス</a></li>
+            <li><a href="#">サイトマップ</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- フッター下部 -->
+      <div class="footer-bottom">
+        <p>© 2024 株式会社テスト不動産. All Rights Reserved.</p>
+        <div class="footer-legal">
+          <a href="#">プライバシーポリシー</a>
+          <a href="#">利用規約</a>
+          <a href="#">特定商取引法</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== チャットボットウィジェット ===== -->
+
+  <!-- チャット開閉ボタン -->
+  <button id="chat-trigger" onclick="toggleChat()">
+    💬 お問い合わせ
+  </button>
+
+  <!-- チャットウィンドウ -->
+  <div id="chat-widget">
+    <!-- ヘッダー -->
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-header-text">
+          <h4>テスト不動産 サポート</h4>
+          <p>通常数時間以内に返答します</p>
+        </div>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+
+    <!-- メッセージエリア -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- 初期ボットメッセージ -->
+      <div class="msg bot">
+        <div>
+          <div class="msg-bubble">
+            こんにちは！株式会社テスト不動産のサポートチャットです 🏠<br>
+            物件のご相談・資料請求など、お気軽にご入力ください。
+          </div>
+        </div>
+      </div>
+      <div class="msg bot">
+        <div>
+          <div class="msg-bubble">
+            例）「渋谷区の3LDKを探しています」「査定をお願いしたい」
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 入力エリア -->
+    <div class="chat-input-area">
+      <textarea
+        id="chat-input"
+        placeholder="メッセージを入力..."
+        rows="1"
+        onkeydown="handleEnter(event)"
+      ></textarea>
+      <button id="chat-send" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- ===== JavaScript ===== -->
+  <script>
+    /* ===== パーティクル生成 ===== */
+    (function generateParticles() {
+      const container = document.getElementById('particles');
+      const count = 28; /* パーティクルの数 */
+
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+
+        /* ランダムな位置・サイズ・速度 */
+        const size   = Math.random() * 5 + 2;        /* 2〜7px */
+        const left   = Math.random() * 100;          /* 横位置 % */
+        const delay  = Math.random() * 12;           /* 遅延（秒） */
+        const dur    = Math.random() * 10 + 12;      /* 12〜22秒 */
+
+        p.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${left}%;
+          bottom: -10px;
+          animation-duration: ${dur}s;
+          animation-delay: -${delay}s;
+          opacity: ${Math.random() * 0.4 + 0.1};
+        `;
+        container.appendChild(p);
+      }
+    })();
+
+    /* ===== ハンバーガーメニュー ===== */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+
+    // モバイルメニューのリンクをクリックしたら閉じる
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    /* ===== チャットボット ===== */
+    const chatWidget = document.getElementById('chat-widget');
+
+    // チャットウィンドウの開閉
+    function toggleChat() {
+      chatWidget.classList.toggle('open');
+    }
+
+    // 外部からチャットを開く（CTAバナーのボタン用）
+    function openChat() {
+      chatWidget.classList.add('open');
+      // ページスクロールを最下部に
+      setTimeout(() => {
+        document.getElementById('chat-messages').scrollTop = 9999;
+      }, 300);
+    }
+
+    // Enterキーで送信（Shift+Enterは改行）
+    function handleEnter(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    // メッセージ送信処理（将来的にAPI連携に切り替え可能）
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      // ユーザーのメッセージを表示
+      appendMessage('user', text);
+      input.value = '';
+
+      // 入力内容をコンソール出力（API連携時はここをエンドポイント送信に変更）
+      console.log('[チャット送信]', text);
+
+      // ボットの自動返答（タイピング演出あり）
+      setTimeout(() => {
+        const reply = getBotReply(text);
+        appendMessage('bot', reply);
+      }, 800);
+    }
+
+    // メッセージをDOMに追加する関数
+    function appendMessage(role, text) {
+      const messages = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      div.innerHTML = `<div><div class="msg-bubble">${text}</div></div>`;
+      messages.appendChild(div);
+      // 自動スクロール
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // 簡易FAQ自動返答（将来的にClaudeなどのAI APIに置き換え可能）
+    function getBotReply(text) {
+      const lower = text;
+      if (lower.includes('営業時間') || lower.includes('営業日') || lower.includes('定休') || lower.includes('休み') || lower.includes('何時')) {
+        return '営業時間は 9:00〜19:00 です。\n定休日は毎週水曜日と第1・第3・第5火曜日となっております。定休日以外はお気軽にお問い合わせください 😊';
+      }
+      if (lower.includes('手数料') || lower.includes('費用')) {
+        return '弊社は売主直売のため、仲介手数料は一切かかりません！その他の諸費用についてはお気軽にご相談ください。';
+      }
+      if (lower.includes('査定') || lower.includes('売りたい')) {
+        return '無料査定のご依頼ありがとうございます。担当者よりご連絡差し上げますので、お名前とご連絡先をお知らせください。';
+      }
+      if (lower.includes('物件') || lower.includes('探') || lower.includes('購入')) {
+        return 'ご希望の物件を探しているのですね！エリア・予算・間取りのご希望をお教えいただくと、ぴったりの物件をご提案できます。';
+      }
+      if (lower.includes('採用') || lower.includes('求人') || lower.includes('働き')) {
+        return '採用情報に興味をお持ちいただきありがとうございます！採用担当よりご連絡しますので、ご希望の職種をお知らせください。';
+      }
+      // デフォルト返答
+      return 'お問い合わせいただきありがとうございます 😊\n担当者より折り返しご連絡いたします。お名前とご連絡先（電話またはメール）をご入力いただけますか？';
+    }
+  </script>
+
+</body>
+</html>
