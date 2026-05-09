@@ -22,14 +22,12 @@ const path       = require('path');
 const PORT  = process.env.PORT || 3000;
 const MODEL = 'claude-opus-4-7';
 
-/* APIキーの確認 */
+/* APIキーの確認（未設定の場合は警告のみ・Vercel環境変数で設定） */
 if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('[エラー] 環境変数 ANTHROPIC_API_KEY が設定されていません。');
-  console.error('         .env ファイルに ANTHROPIC_API_KEY=sk-ant-... を記載してください。');
-  process.exit(1);
+  console.warn('[警告] 環境変数 ANTHROPIC_API_KEY が設定されていません。');
 }
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
 /* ===== テスト太郎（個人 HP）のシステムプロンプト ===== */
 const PERSONAL_SYSTEM_PROMPT = `あなたはテスト太郎の公式ウェブサイトのアシスタント AI です。
@@ -188,9 +186,14 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-/* ===== サーバー起動 ===== */
-app.listen(PORT, () => {
-  console.log(`✅ サーバーが起動しました → http://localhost:${PORT}`);
-  console.log(`   個人HP      : http://localhost:${PORT}/index.html`);
-  console.log(`   会社HP      : http://localhost:${PORT}/company.html`);
-});
+/* ===== サーバー起動（ローカル開発時のみ） ===== */
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ サーバーが起動しました → http://localhost:${PORT}`);
+    console.log(`   個人HP      : http://localhost:${PORT}/index.html`);
+    console.log(`   会社HP      : http://localhost:${PORT}/company.html`);
+  });
+}
+
+/* Vercel のサーバーレス環境用にアプリをエクスポート */
+module.exports = app;
