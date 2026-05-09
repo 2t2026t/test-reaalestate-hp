@@ -1,0 +1,9 @@
+# 環境変数ファイル（APIキーが含まれるため絶対にコミットしない）
+.env
+
+# Node.js の依存パッケージ
+node_modules/
+
+# OS 生成ファイル
+.DS_Store
+Thumbs.db

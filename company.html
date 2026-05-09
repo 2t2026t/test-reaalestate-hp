@@ -1145,6 +1145,30 @@
       background: var(--accent-dark);
     }
 
+    /* ===== タイピングインジケーター ===== */
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 14px 18px;
+    }
+
+    .typing-indicator span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: typingDot 1.4s ease-in-out infinite;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingDot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+      30% { transform: translateY(-7px); opacity: 1; }
+    }
+
     /* ===== レスポンシブ対応 ===== */
 
     /* タブレット（768px〜1024px） */
@@ -1644,8 +1668,8 @@
       <div class="chat-header-info">
         <div class="chat-avatar">🤖</div>
         <div class="chat-header-text">
-          <h4>テスト不動産 サポート</h4>
-          <p>通常数時間以内に返答します</p>
+          <h4>テスト不動産 AI サポート</h4>
+          <p>Claude AI が即座にお答えします ✨</p>
         </div>
       </div>
       <button class="chat-close" onclick="toggleChat()">✕</button>
@@ -1730,24 +1754,26 @@
       });
     });
 
-    /* ===== チャットボット ===== */
+    /* ===== チャットボット（/api/chat 中継サーバー経由） ===== */
     const chatWidget = document.getElementById('chat-widget');
 
-    // チャットウィンドウの開閉
+    /* 会話履歴（マルチターン対応） */
+    let conversationHistory = [];
+
+    /* --- チャットウィンドウ開閉 --- */
     function toggleChat() {
       chatWidget.classList.toggle('open');
     }
 
-    // 外部からチャットを開く（CTAバナーのボタン用）
+    /* 外部（CTAバナー）からチャットを開く */
     function openChat() {
       chatWidget.classList.add('open');
-      // ページスクロールを最下部に
       setTimeout(() => {
         document.getElementById('chat-messages').scrollTop = 9999;
       }, 300);
     }
 
-    // Enterキーで送信（Shift+Enterは改行）
+    /* Enterキーで送信（Shift+Enterは改行） */
     function handleEnter(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -1755,57 +1781,136 @@
       }
     }
 
-    // メッセージ送信処理（将来的にAPI連携に切り替え可能）
-    function sendMessage() {
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-      if (!text) return;
-
-      // ユーザーのメッセージを表示
-      appendMessage('user', text);
-      input.value = '';
-
-      // 入力内容をコンソール出力（API連携時はここをエンドポイント送信に変更）
-      console.log('[チャット送信]', text);
-
-      // ボットの自動返答（タイピング演出あり）
-      setTimeout(() => {
-        const reply = getBotReply(text);
-        appendMessage('bot', reply);
-      }, 800);
+    /* HTMLエスケープ（XSS対策） */
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/\n/g, '<br>');
     }
 
-    // メッセージをDOMに追加する関数
+    /* メッセージをDOMに追加 */
     function appendMessage(role, text) {
       const messages = document.getElementById('chat-messages');
       const div = document.createElement('div');
       div.className = `msg ${role}`;
-      div.innerHTML = `<div><div class="msg-bubble">${text}</div></div>`;
+      div.innerHTML = `<div><div class="msg-bubble">${escapeHtml(text)}</div></div>`;
       messages.appendChild(div);
-      // 自動スクロール
       messages.scrollTop = messages.scrollHeight;
     }
 
-    // 簡易FAQ自動返答（将来的にClaudeなどのAI APIに置き換え可能）
-    function getBotReply(text) {
-      const lower = text;
-      if (lower.includes('営業時間') || lower.includes('営業日') || lower.includes('定休') || lower.includes('休み') || lower.includes('何時')) {
-        return '営業時間は 9:00〜19:00 です。\n定休日は毎週水曜日と第1・第3・第5火曜日となっております。定休日以外はお気軽にお問い合わせください 😊';
+    /* タイピングインジケーター表示 */
+    function showTyping() {
+      const messages = document.getElementById('chat-messages');
+      const id = 'typing-' + Date.now();
+      const div = document.createElement('div');
+      div.className = 'msg bot';
+      div.id = id;
+      div.innerHTML = `<div><div class="msg-bubble typing-indicator"><span></span><span></span><span></span></div></div>`;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+      return id;
+    }
+
+    function removeTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    /* ストリーミング用バブルを生成 */
+    function createStreamBubble() {
+      const messages = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'msg bot';
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      const inner = document.createElement('div');
+      inner.appendChild(bubble);
+      msgDiv.appendChild(inner);
+      messages.appendChild(msgDiv);
+      return bubble;
+    }
+
+    /* メッセージ送信（/api/chat 経由で Claude を呼び出す） */
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      /* ユーザーメッセージを表示・履歴に追加 */
+      appendMessage('user', text);
+      input.value = '';
+      conversationHistory.push({ role: 'user', content: text });
+
+      /* タイピングインジケーター表示 */
+      const typingId = showTyping();
+
+      try {
+        /* 中継サーバーへリクエスト（SSEストリーミング） */
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: conversationHistory }),
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `サーバーエラー: HTTP ${response.status}`);
+        }
+
+        /* タイピング除去 → ストリーミングバブル設置 */
+        removeTyping(typingId);
+        const bubble = createStreamBubble();
+
+        /* SSEストリームを逐次読み込み */
+        const reader  = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+        let buffer   = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); /* 未完のラインを次回に持ち越し */
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              /* サーバーからエラーが返ってきた場合 */
+              if (parsed.error) throw new Error(parsed.error);
+              /* テキストチャンクをリアルタイム表示 */
+              if (parsed.text) {
+                fullText += parsed.text;
+                bubble.innerHTML = fullText.replace(/\n/g, '<br>');
+                document.getElementById('chat-messages').scrollTop = 9999;
+              }
+            } catch (parseErr) {
+              /* [DONE] や不完全なJSONはスキップ */
+              if (parseErr.message && !parseErr.message.startsWith('Unexpected')) throw parseErr;
+            }
+          }
+        }
+
+        /* 会話履歴にアシスタント返答を追加 */
+        if (fullText) {
+          conversationHistory.push({ role: 'assistant', content: fullText });
+        }
+
+      } catch (err) {
+        removeTyping(typingId);
+        console.error('[チャットエラー]', err);
+        appendMessage('bot', `⚠️ ${err.message || 'エラーが発生しました。'}`);
+        /* 送信に失敗したユーザーメッセージを履歴から除去 */
+        conversationHistory.pop();
       }
-      if (lower.includes('手数料') || lower.includes('費用')) {
-        return '弊社は売主直売のため、仲介手数料は一切かかりません！その他の諸費用についてはお気軽にご相談ください。';
-      }
-      if (lower.includes('査定') || lower.includes('売りたい')) {
-        return '無料査定のご依頼ありがとうございます。担当者よりご連絡差し上げますので、お名前とご連絡先をお知らせください。';
-      }
-      if (lower.includes('物件') || lower.includes('探') || lower.includes('購入')) {
-        return 'ご希望の物件を探しているのですね！エリア・予算・間取りのご希望をお教えいただくと、ぴったりの物件をご提案できます。';
-      }
-      if (lower.includes('採用') || lower.includes('求人') || lower.includes('働き')) {
-        return '採用情報に興味をお持ちいただきありがとうございます！採用担当よりご連絡しますので、ご希望の職種をお知らせください。';
-      }
-      // デフォルト返答
-      return 'お問い合わせいただきありがとうございます 😊\n担当者より折り返しご連絡いたします。お名前とご連絡先（電話またはメール）をご入力いただけますか？';
     }
   </script>
 
